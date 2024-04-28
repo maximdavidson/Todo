@@ -1,52 +1,31 @@
-import "./App.css";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+
+import { addTodo } from "./store/todoSlice";
+import NewTodoForm from "./components/NewTodoForm";
 import TodoList from "./components/TodoList";
-import InputField from "./components/InputField";
+
+import "./App.css";
 
 function App() {
-  const [todos, setTodos] = useState([]);
   const [text, setText] = useState("");
+  const dispatch = useDispatch();
 
-  const addTodo = () => {
+  const handleAction = () => {
     if (text.trim().length) {
-      setTodos([
-        ...todos,
-        {
-          //создание нового объекта todo, который вверху добавили к todos
-          id: new Date().toISOString(),
-          text,
-          completed: false,
-        },
-      ]);
+      dispatch(addTodo({ text }));
       setText("");
     }
   };
 
-  const removeTodo = (todoId) => {
-    setTodos(todos.filter((todo) => todo.id !== todoId));
-  };
-
-  const toggleTodoComplete = (todoId) => {
-    setTodos(
-      todos.map((todo) => {
-        if (todo.id !== todoId) return todo;
-
-        return {
-          ...todo,
-          completed: !todo.completed,
-        };
-      })
-    );
-  };
-
   return (
     <div className="App">
-      <InputField text={text} handleInput={setText} handleSubmit={addTodo} />
-      <TodoList
-        todos={todos}
-        toggleTodoComplete={toggleTodoComplete}
-        removeTodo={removeTodo}
+      <NewTodoForm
+        value={text}
+        updateText={setText}
+        handleAction={handleAction}
       />
+      <TodoList />
     </div>
   );
 }
